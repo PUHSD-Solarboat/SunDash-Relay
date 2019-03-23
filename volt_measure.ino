@@ -21,15 +21,15 @@
 
 int sum = 0;                    // sum of samples taken
 unsigned char sample_count = 0; // current sample number
-float voltage = 0.0;            // calculated voltage
-const float magicNumber = 5.409692;
+double voltage = 0.0;            // calculated voltage
+const double magicNumber = 5.34392;
 SoftwareSerial XBee(2, 3); // RX, TX
 
 void setup()
 {
     Serial.begin(9600);
     XBee.begin(9600);
-    Serial.begin(9600);
+    //Serial.begin(9600);
 }
 
 void loop()
@@ -38,19 +38,19 @@ void loop()
     while (sample_count < NUM_SAMPLES) {
         sum += analogRead(A2);
         sample_count++;
-        delay(20);
+        delay(25);
     }
     // calculate the voltage
     // use 5.0 for a 5.0V ADC reference voltage
     // 5.015V is the calibrated reference voltage
-    voltage = ((float)sum / (float)NUM_SAMPLES * 5.015) / 1024.0;
+    voltage = ((double)sum / (double)NUM_SAMPLES * 5.02) / 1024.0;
     // send voltage for display on Serial Monitor
     // voltage multiplied by 11 when using voltage divider that
     // divides by 11. 11.132 is the calibrated voltage divide
     // value
     union
     {
-        float fval;
+        double fval;
         byte bval[4];
     } volt_measure;
     
@@ -61,5 +61,5 @@ void loop()
     XBee.println(voltage);
     sample_count = 0;
     sum = 0;
-    delay(250);
+   
 }
