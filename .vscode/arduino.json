@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:uno",
     "programmer": "ArduinoISP",
-    "port": "COM4",
+    "port": "/dev/ttyACM0",
     "sketch": "volt_measure.ino"
 }

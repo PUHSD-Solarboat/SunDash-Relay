@@ -18,48 +18,48 @@
 // number of analog samples to take per reading
 #define NUM_SAMPLES 10
 #include <SoftwareSerial.h>
-
+#include <Wire.h>
+#include <Adafruit_ADS1015.h>
 int sum = 0;                    // sum of samples taken
 unsigned char sample_count = 0; // current sample number
-double voltage = 0.0;            // calculated voltage
+double voltage = 0.0;           // calculated voltage
 const double magicNumber = 5.34392;
 SoftwareSerial XBee(2, 3); // RX, TX
+Adafruit_ADS1015 ads;
 
 void setup()
 {
     Serial.begin(9600);
     XBee.begin(9600);
+    ads.begin();
+    ads.setGain(GAIN_ONE); 
     //Serial.begin(9600);
+    //ads.setGain(GAIN_EIGHT); 
 }
 
 void loop()
 {
-    // take a number of analog samples and add them up
-    while (sample_count < NUM_SAMPLES) {
-        sum += analogRead(A2);
-        sample_count++;
-        delay(25);
-    }
-    // calculate the voltage
-    // use 5.0 for a 5.0V ADC reference voltage
-    // 5.015V is the calibrated reference voltage
-    voltage = ((double)sum / (double)NUM_SAMPLES * 5.02) / 1024.0;
-    // send voltage for display on Serial Monitor
-    // voltage multiplied by 11 when using voltage divider that
-    // divides by 11. 11.132 is the calibrated voltage divide
-    // value
-    union
-    {
-        double fval;
-        byte bval[4];
-    } volt_measure;
+    int adc0, adc1, adc2, adc3;
+
+    adc0 = ads.readADC_SingleEnded(0);
+    adc1 = ads.readADC_SingleEnded(1);
+    adc2 = ads.readADC_SingleEnded(2);
+    adc3 = ads.readADC_SingleEnded(3);
     
-    voltage = voltage * magicNumber;
-    volt_measure.fval = voltage;
-    Serial.print(voltage);
-    Serial.println (" V");
-    XBee.println(voltage);
-    sample_count = 0;
-    sum = 0;
-   
+
+    Serial.print("ADC 0 -");
+    Serial.print(adc0);
+    Serial.println("");
+    XBee.print(adc0);
+    XBee.print(" ");
+    XBee.print(adc1);
+    XBee.print(" ");
+    XBee.print(adc2);
+    XBee.print(" ");
+    XBee.print(adc3);
+
+    XBee.println();
+
+
+    delay(100);
 }
